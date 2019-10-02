@@ -18,7 +18,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         super.viewDidLoad()
         
         // シーンを作成して登録
+        sceneView.scene = SCNScene()
         
+        // 特徴点を表示する
+        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
+        
+        // コンフィギュレーションの作成
+        let configration = ARWorldTrackingConfiguration()
+        
+        // セッション開始
+        sceneView.session.run(configration)
     }
     
     override func viewWillAppear(_ animated: Bool) {

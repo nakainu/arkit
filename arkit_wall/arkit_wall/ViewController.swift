@@ -26,9 +26,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // 特徴点を表示する
         sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
         
-        // verticalを指定して垂直面を検出する
+        // 平面と垂直面を検出する
         let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = .vertical
+        configuration.planeDetection = [.horizontal, .vertical]
         sceneView.session.run(configuration)
     }
     
@@ -41,15 +41,29 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             let planeNode = SCNNode()
             
             //ジオメトリの作成
-            let geometry = SCNPlane(width: CGFloat(planeAnchor.extent.x),height: CGFloat(planeAnchor.extent.z))
-            geometry.materials.first?.diffuse.contents = UIColor.white.withAlphaComponent(0.5)
-            
+            let geometry = SCNPlane(width: CGFloat(planeAnchor.extent.x),
+                                    height: CGFloat(planeAnchor.extent.z))
+        
+            let floorColor: UIColor = UIColor.red.withAlphaComponent(0.5)
+            let wallColor: UIColor = UIColor.blue.withAlphaComponent(0.5)
+                
+            // 水平面化垂直面かで色を分ける
+            if planeAnchor.alignment == .vertical
+            {
+                geometry.materials.first?.diffuse.contents = wallColor
+            }
+            else
+            {
+                geometry.materials.first?.diffuse.contents = floorColor
+            }
+        
             // ノードにGeometryとTransformを指定
             planeNode.geometry = geometry
             planeNode.transform = SCNMatrix4MakeRotation(-Float.pi / 2.0, 1, 0, 0)
             
             // 検出したアンケートに対応するノードに子ノードとしてもたせる
             node.addChildNode(planeNode)
+
     }
     
     // 平面が更新されたときに呼ばれる
